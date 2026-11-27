@@ -9,10 +9,23 @@
 
 <title>KAT.CRAFT / KLASSICKO</title>
 
-<script type="module"
-src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+<!-- POST-PROCESSING LIBRARIES -->
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.min.js"
+    }
+}
 </script>
 
+<script type="module"
+src="https://cdn.jsdelivr.net/npm/@google/model-viewer/dist/model-viewer-module.min.js">
+</script>
+
+<script type="module"
+src="https://cdn.jsdelivr.net/npm/@google/model-viewer-effects/dist/model-viewer-effects.min.js">
+</script>
 <style>
 
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
@@ -522,21 +535,54 @@ footer {
 
     <div class="hero-model">
 
-        <model-viewer
-            class="hero-logo"
-            src="Logo.glb"
-            alt="KAT.CRAFT 3D logo"
-            auto-rotate
-            auto-rotate-delay="0"
-            rotation-per-second="20deg"
-            camera-controls
-            disable-zoom
-            disable-pan
-            interaction-prompt="none"
-            shadow-intensity="0"
-            exposure="1.2"
-            loading="eager">
-        </model-viewer>
+      <model-viewer
+    class="hero-logo"
+    src="LOGO.glb"
+    alt="KAT.CRAFT 3D logo"
+    auto-rotate
+    auto-rotate-delay="0"
+    rotation-per-second="20deg"
+    camera-controls
+    disable-zoom
+    disable-pan
+    interaction-prompt="none"
+    shadow-intensity="0"
+    environment-image="neutral"
+    exposure="1.2"
+    loading="eager">
+
+    <!-- POST-PROCESSING -->
+    
+    <effect-composer render-mode="quality">
+
+        <ssao-effect
+            blend-mode="skip">
+        </ssao-effect>
+
+        <bloom-effect
+            strength="0.4"
+            radius="0.5"
+            threshold="0.8">
+        </bloom-effect>
+
+        <outline-effect
+            color="#91B6DA"
+            blend-mode="skip">
+        </outline-effect>
+
+        <smaa-effect>
+        </smaa-effect>
+
+        <color-grade-effect
+            brightness="0.02"
+            contrast="0.15"
+            saturation="0"
+            tonemapping="aces_filmic">
+        </color-grade-effect>
+
+    </effect-composer>
+
+</model-viewer>
 
         <div class="label model-label">
             FIG. 001 / BRAND IDENTITY
