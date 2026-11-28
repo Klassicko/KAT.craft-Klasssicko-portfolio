@@ -88,6 +88,280 @@ document.querySelectorAll('model-viewer').forEach(viewer => {
 
 })();
 </script>
+
+<!-- FREE DOWNLOAD SYSTEM -->
+
+<style>
+
+#freeDownload {
+    border: 1px solid #91B6DA;
+    color: #E4F1FF;
+    padding: 14px 24px;
+    margin-top: 18px;
+    background: #142D4C;
+}
+
+#freeDownload:hover {
+    background: #91B6DA;
+    color: #0B1D35;
+}
+
+#licenseDialog {
+    width: min(90%, 480px);
+    max-height: 85vh;
+    overflow: auto;
+    padding: 28px;
+    border: 1px solid #91B6DA;
+    background: #142D4C;
+    color: #E4F1FF;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+#licenseDialog::backdrop {
+    background: rgba(5, 15, 30, 0.85);
+    backdrop-filter: blur(6px);
+}
+
+#licenseDialog h2 {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    margin: 15px 0;
+}
+
+#licenseDialog p,
+#licenseDialog li {
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+#licenseClose {
+    float: right;
+}
+
+#licenseAccept {
+    width: auto;
+    margin-right: 8px;
+}
+
+#confirmDownload {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    background: #91B6DA;
+    color: #0B1D35;
+}
+
+#confirmDownload:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+#downloadStatus {
+    margin-top: 12px;
+    font-size: 11px;
+    color: #91B6DA;
+}
+
+</style>
+
+<dialog id="licenseDialog">
+
+    <button id="licenseClose">X</button>
+
+    <div class="label">
+        LICENSE / PERSONAL USE ONLY
+    </div>
+
+    <h2>FREE DOWNLOAD.</h2>
+
+    <p id="downloadFile"></p>
+
+    <p><strong>PERMITTED USE</strong></p>
+
+    <ul>
+        <li>Personal, non-commercial use.</li>
+        <li>3D printing for personal purposes.</li>
+    </ul>
+
+    <p><strong>PROHIBITED USE</strong></p>
+
+    <ul>
+        <li>Commercial use or production.</li>
+        <li>Selling digital or physical copies.</li>
+        <li>Modification of the model.</li>
+        <li>Redistribution or re-uploading.</li>
+    </ul>
+
+    <hr style="border:0;border-top:1px solid #91B6DA40">
+
+    <p>
+        Models may not have been tested or optimized
+        for 3D printing. Verify dimensions and geometry
+        before printing. Use at your own risk.
+    </p>
+
+    <p>
+        Copyright 2026 KAT.CRAFT / KLASSICKO.
+        All rights reserved.
+    </p>
+
+    <label>
+        <input type="checkbox" id="licenseAccept">
+        I have read and agree to the license terms.
+    </label>
+
+    <button id="confirmDownload" disabled>
+        AGREE & DOWNLOAD STL
+    </button>
+
+    <div id="downloadStatus" role="status"></div>
+
+</dialog>
+
+<script>
+
+(() => {
+
+    const modelViewer = document.getElementById('viewer');
+    const panel = document.querySelector('.panel');
+
+    if (!modelViewer || !panel) return;
+
+    const downloadButton = document.createElement('button');
+
+    downloadButton.id = 'freeDownload';
+    downloadButton.textContent = 'FREE DOWNLOAD';
+    panel.appendChild(downloadButton);
+
+    const dialog = document.getElementById('licenseDialog');
+    const accept = document.getElementById('licenseAccept');
+    const confirm = document.getElementById('confirmDownload');
+    const status = document.getElementById('downloadStatus');
+
+    let modelURL = '';
+    let converting = false;
+
+    downloadButton.onclick = () => {
+
+        modelURL = modelViewer.getAttribute('src');
+
+        if (!modelURL) return;
+
+        modelURL = new URL(
+            modelURL,
+            document.baseURI
+        ).href;
+
+        accept.checked = false;
+        confirm.disabled = true;
+        status.textContent = '';
+
+        document.getElementById('downloadFile')
+            .textContent = modelURL
+            .split('/').pop()
+            .replace(/\.glb$/i, '.stl');
+
+        dialog.showModal();
+
+    };
+
+    accept.onchange = () => {
+        confirm.disabled = !accept.checked || converting;
+    };
+
+    document.getElementById('licenseClose').onclick = () => {
+        if (!converting) dialog.close();
+    };
+
+    dialog.addEventListener('cancel', event => {
+        if (converting) event.preventDefault();
+    });
+
+    confirm.onclick = async () => {
+
+        if (!accept.checked || converting) return;
+
+        converting = true;
+        confirm.disabled = true;
+        accept.disabled = true;
+
+        status.textContent = 'CONVERTING MODEL TO STL...';
+
+        try {
+
+            const { GLTFLoader } = await import(
+                'https://esm.sh/three@0.170.0/examples/jsm/loaders/GLTFLoader.js'
+            );
+
+            const { STLExporter } = await import(
+                'https://esm.sh/three@0.170.0/examples/jsm/exporters/STLExporter.js'
+            );
+
+            const loader = new GLTFLoader();
+            const gltf = await loader.loadAsync(modelURL);
+
+            const scene = gltf.scene;
+
+            // Convert meters to millimeters.
+            scene.scale.multiplyScalar(1000);
+
+            // Convert Y-up to Z-up for printing.
+            scene.rotation.x += Math.PI / 2;
+
+            scene.updateMatrixWorld(true);
+
+            const exporter = new STLExporter();
+
+            const result = exporter.parse(scene, {
+                binary: true
+            });
+
+            const blob = new Blob([result], {
+                type: 'application/octet-stream'
+            });
+
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+
+            link.href = url;
+
+            link.download = modelURL
+                .split('/').pop()
+                .replace(/\.glb$/i, '.stl');
+
+            document.body.appendChild(link);
+
+            link.click();
+            link.remove();
+
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+            status.textContent = 'STL FILE GENERATED.';
+
+            dialog.close();
+
+        } catch (error) {
+
+            console.error(error);
+
+            status.textContent =
+                'CONVERSION FAILED. PLEASE TRY AGAIN.';
+
+        } finally {
+
+            converting = false;
+            accept.disabled = false;
+            confirm.disabled = !accept.checked;
+
+        }
+
+    };
+
+})();
+
+</script>
+
 <body>
 <header><a class="logo" href="../index.html">KAT.CRAFT</a><a class="label" href="../index.html#archive">← BACK TO ARCHIVE</a></header>
 <section class="heading"><div class="label">SEC. 001 / OBJECT ARCHIVE</div><h1>3D PRINTING.</h1></section>
