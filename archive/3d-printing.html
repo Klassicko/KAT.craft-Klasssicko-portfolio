@@ -40,6 +40,54 @@ document.querySelectorAll('model-viewer').forEach(viewer => {
 });
 </script>
 </head>
+
+<script>
+(() => {
+
+    const viewer = document.getElementById('viewer');
+
+    if (!viewer) return;
+
+    const distances = {
+        'model01.glb': 150,
+        'model02.glb': 160,
+        'model03.glb': 160,
+        'model04.glb': 180
+    };
+
+    function improveRendering() {
+
+        const file = viewer.getAttribute('src')
+            ?.split('/').pop();
+
+        const distance = distances[file] || 160;
+
+        viewer.setAttribute('exposure', '0.9');
+        viewer.setAttribute('shadow-intensity', '0.4');
+        viewer.setAttribute('shadow-softness', '1');
+        viewer.setAttribute('environment-image', 'neutral');
+
+        viewer.setAttribute(
+            'max-camera-orbit', 'auto auto 400%'
+        );
+
+        viewer.setAttribute(
+            'camera-orbit', `0deg 75deg ${distance}%`
+        );
+
+        viewer.jumpCameraToGoal();
+
+    }
+
+    viewer.addEventListener('load', improveRendering);
+
+    document.getElementById('reset')
+        ?.addEventListener('click', improveRendering);
+
+    if (viewer.loaded) improveRendering();
+
+})();
+</script>
 <body>
 <header><a class="logo" href="../index.html">KAT.CRAFT</a><a class="label" href="../index.html#archive">← BACK TO ARCHIVE</a></header>
 <section class="heading"><div class="label">SEC. 001 / OBJECT ARCHIVE</div><h1>3D PRINTING.</h1></section>
