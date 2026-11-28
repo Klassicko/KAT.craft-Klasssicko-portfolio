@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3D PRINTING / KAT.CRAFT</title>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;600&family=Space+Mono&display=swap');
+:root{--bg:#0B1D35;--panel:#142D4C;--accent:#91B6DA;--text:#E4F1FF;--border:#91B6DA40}
+*{box-sizing:border-box}body{margin:0;background-color:var(--bg);background-image:linear-gradient(#91B6DA20 1px,transparent 1px),linear-gradient(90deg,#91B6DA20 1px,transparent 1px),linear-gradient(#91B6DA09 1px,transparent 1px),linear-gradient(90deg,#91B6DA09 1px,transparent 1px);background-size:100px 100px,100px 100px,20px 20px,20px 20px;color:var(--text);font-family:'Space Grotesk',sans-serif}a{color:inherit;text-decoration:none}header,footer{padding:20px 6%;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg)}.logo,h1,h2{font-family:Anton,sans-serif;font-weight:400}.logo{font-size:26px}.label,button{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)}.heading{padding:30px 6% 0}h1{font-size:clamp(42px,7vw,90px);margin:8px 0}main{display:grid;grid-template-columns:34% 66%;align-items:center}.selector{height:540px;position:relative;overflow:hidden;touch-action:none;user-select:none;cursor:grab}.ring{position:absolute;border:1px solid var(--border);border-radius:50%;pointer-events:none}.ring:after{content:'';position:absolute;inset:12px;border:1px dashed var(--border);border-radius:50%}.item{position:absolute;border:1px solid var(--border);border-radius:50%;background:var(--panel);width:120px;height:120px;padding:0;overflow:hidden;transition:transform .22s,left .22s,top .22s,opacity .22s}.item.active{border:2px solid var(--accent);box-shadow:0 0 24px #91B6DA44;z-index:3}.item model-viewer{width:100%;height:100%;pointer-events:none}.item span{position:absolute;bottom:8px;left:0;right:0;text-align:center;pointer-events:none;font-size:9px}.dragging .item{transition:none}.wheelcontrols{position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:8px;z-index:5}.panel{min-width:0;border-left:1px solid var(--border);padding:20px 6%}#viewer{width:100%;height:clamp(280px,48vh,550px);--poster-color:transparent}h2{font-size:clamp(28px,4vw,52px);margin:10px 0}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}button{border:1px solid var(--border);background:var(--bg);padding:10px;cursor:pointer}button:hover,button:focus-visible{border-color:var(--accent);color:var(--text)}input{width:100%;accent-color:var(--accent)}[hidden]{display:none!important}#status{min-height:18px;overflow-wrap:anywhere}footer{margin-top:30px;border-top:1px solid var(--border)}@media(max-width:700px){main{grid-template-columns:38% 62%}.selector{height:380px}.item{width:64px;height:64px}.panel{padding:12px}.wheelcontrols{flex-wrap:wrap;gap:4px}.label,button{font-size:9px}#viewer{height:280px}}
+
+#viewer{background:transparent;height:clamp(360px,60vh,680px)}
+#freeDownload{border-color:var(--accent);padding:14px 22px;margin-top:18px;color:var(--text)}
+#freeDownload:hover,#confirmDownload{background:var(--accent);color:var(--bg)}
+#licenseDialog{position:fixed;margin:auto;width:min(92vw,480px);max-height:85vh;overflow:auto;padding:28px;border:1px solid var(--accent);background:var(--panel);color:var(--text)}
+#licenseDialog::backdrop{background:#050f1ed9;backdrop-filter:blur(5px)}
+#licenseDialog h2{font-size:36px}#licenseDialog p,#licenseDialog li{font-size:13px;line-height:1.6}#licenseClose{float:right}#licenseAccept{width:auto}#confirmDownload{width:100%;margin-top:16px}button:disabled{opacity:.4;cursor:not-allowed}#downloadStatus{margin-top:12px;overflow-wrap:anywhere}
+@media(max-width:700px){#viewer{height:350px}}
+</style>
+</head>
+<body>
+<header><a class="logo" href="../index.html">KAT.CRAFT</a><a class="label" href="../index.html#archive">← BACK TO ARCHIVE</a></header>
+<section class="heading"><div class="label">SEC. 001 / OBJECT ARCHIVE</div><h1>3D PRINTING.</h1></section>
+<main><section class="selector" id="selector" aria-label="Project selector"><div class="ring" id="ring"></div><div id="items"></div><div class="wheelcontrols"><button id="prev" aria-label="Previous model">↑</button><button id="next" aria-label="Next model">↓</button><span class="label" id="counter"></span></div></section>
+<section class="panel"><div class="label" id="number">SELECTED OBJECT / 001</div><model-viewer id="viewer" camera-controls touch-action="none" interaction-prompt="none" environment-image="neutral" shadow-intensity="0.45" shadow-softness="0.9" exposure="0.75" max-camera-orbit="auto auto 400%" alt="Selected 3D object"></model-viewer><div class="label" id="status" role="status">INITIALIZING 3D VIEWER...</div><h2 id="name">OBJECT 001</h2><div class="controls"><button id="rotate">AUTO ROTATE</button><button id="reset">RESET VIEW</button><button id="play" hidden>PLAY ANIMATION</button></div><div id="animation" hidden><label class="label" for="slider">ANIMATION / EXPLODED VIEW — <span id="percent">0%</span></label><input id="slider" type="range" min="0" max="100" value="0"></div><button id="freeDownload" type="button" disabled>FREE DOWNLOAD</button></section></main>
+<footer class="label">KAT.CRAFT / KLASSICKO © 2026</footer>
+<dialog id="licenseDialog" aria-labelledby="licenseTitle">
+<button id="licenseClose" type="button" aria-label="Close">X</button>
+<div class="label">LICENSE / PERSONAL USE ONLY</div>
+<h2 id="licenseTitle">FREE DOWNLOAD.</h2><p id="downloadFile"></p>
+<p><strong>PERMITTED USE</strong></p><ul><li>Download and 3D print for personal, non-commercial use.</li></ul>
+<p><strong>PROHIBITED USE</strong></p><ul><li>Commercial use or production.</li><li>Selling digital files or physical prints.</li><li>Modification of the model.</li><li>Redistribution or re-uploading.</li></ul>
+<p>Models may not have been tested or optimized for 3D printing. Verify dimensions, orientation and geometry before printing. Use at your own risk.</p>
+<p>© 2026 KAT.CRAFT / KLASSICKO. All rights reserved.</p>
+<label><input type="checkbox" id="licenseAccept"> I have read and agree to the license terms.</label>
+<button id="confirmDownload" type="button" disabled>AGREE &amp; DOWNLOAD OBJ</button>
+<div id="downloadStatus" class="label" role="status"></div>
+</dialog>
+<script>
+'use strict';
+// Edit project names and file paths here.
+const projects=[{name:'OBJECT 001',file:'model01.glb'},{name:'OBJECT 002',file:'model02.glb'},{name:'OBJECT 003',file:'model03.glb'},{name:'OBJECT 004',file:'model04.glb'}];
+const path='../models/3D-Printing/';
+const $=id=>document.getElementById(id), viewer=$('viewer'), selector=$('selector');
+let selected=0,offset=0,start=null,clicked=null,ready=false,clip=null;
+const wrap=n=>(n%projects.length+projects.length)%projects.length;
+const items=projects.map((p,i)=>{const b=document.createElement('button');b.className='item';b.type='button';b.setAttribute('aria-label',p.name);b.dataset.index=i;const m=document.createElement('model-viewer');m.setAttribute('interaction-prompt','none');m.setAttribute('environment-image','neutral');m.setAttribute('alt',p.name);m.setAttribute('exposure','0.75');const label=document.createElement('span');label.textContent=String(i+1).padStart(2,'0');b.append(m,label);$('items').append(b);b.addEventListener('click',e=>{if(e.detail===0&&ready)choose(i)});return b});
+function layout(){const h=selector.clientHeight,w=selector.clientWidth,r=Math.min(h*.42,w*.72),cx=-r*.13,cy=h/2;Object.assign($('ring').style,{width:2*r+'px',height:2*r+'px',left:cx-r+'px',top:cy-r+'px'});items.forEach((b,i)=>{let d=wrap(i-selected);if(d>projects.length/2)d-=projects.length;const a=d*1.05+offset,visible=Math.abs(a)<1.6;b.style.visibility=visible?'visible':'hidden';b.style.left=cx+r*Math.cos(a)+'px';b.style.top=cy+r*Math.sin(a)+'px';b.style.transform=`translate(-50%,-50%) scale(${Math.max(.55,1.15-Math.abs(a)*.42)})`;b.style.opacity=Math.max(.3,1-Math.abs(a)*.35);b.classList.toggle('active',i===selected);b.setAttribute('aria-pressed',String(i===selected));const m=b.firstElementChild;if(ready&&visible&&!m.hasAttribute('src'))m.setAttribute('src',path+projects[i].file);});}
+function choose(i){if(!ready)return;$('freeDownload').disabled=true;selected=wrap(i);offset=0;clip=null;viewer.pause();viewer.removeAttribute('auto-rotate');viewer.removeAttribute('animation-name');$('rotate').textContent='AUTO ROTATE';$('play').hidden=true;$('animation').hidden=true;$('slider').value=0;$('percent').textContent='0%';$('name').textContent=projects[selected].name;$('number').textContent='SELECTED OBJECT / '+String(selected+1).padStart(3,'0');$('counter').textContent=(selected+1)+' / '+projects.length;const src=path+projects[selected].file;if(viewer.getAttribute('src')!==src){$('status').textContent='LOADING '+projects[selected].file+'...';viewer.setAttribute('src',src)}else if(viewer.loaded){loaded()}layout()}
+function loaded(){$('status').textContent='';$('freeDownload').disabled=false;const clips=viewer.availableAnimations||[];clip=clips.find(n=>n.toLowerCase()==='default')||clips[0]||null;if(clip){viewer.animationName=clip;viewer.pause();viewer.currentTime=0;$('play').hidden=false;$('play').textContent='PLAY ANIMATION';$('animation').hidden=false}applyView()}
+viewer.addEventListener('load',loaded);viewer.addEventListener('error',()=>{$('status').textContent='MODEL LOAD FAILED: '+projects[selected].file+' — check GLB file and path.'});
+$('prev').onclick=()=>choose(selected-1);$('next').onclick=()=>choose(selected+1);
+selector.addEventListener('pointerdown',e=>{if(e.target.closest('.wheelcontrols'))return;start=e.clientY;clicked=e.target.closest('.item')?.dataset.index;selector.setPointerCapture(e.pointerId);selector.classList.add('dragging')});
+selector.addEventListener('pointermove',e=>{if(start===null)return;offset=Math.max(-1.1,Math.min(1.1,(e.clientY-start)/130));layout()});
+selector.addEventListener('pointerup',e=>{if(start===null)return;const d=e.clientY-start;start=null;selector.classList.remove('dragging');if(Math.abs(d)<8&&clicked!=null)choose(Number(clicked));else if(Math.abs(d)>35)choose(selected-Math.sign(d));else{offset=0;layout()}});
+selector.addEventListener('pointercancel',()=>{start=null;offset=0;selector.classList.remove('dragging');layout()});let last=0;selector.addEventListener('wheel',e=>{e.preventDefault();if(Date.now()-last>250){last=Date.now();choose(selected+Math.sign(e.deltaY))}},{passive:false});
+$('rotate').onclick=()=>{if(!ready)return;viewer.toggleAttribute('auto-rotate');$('rotate').textContent=viewer.hasAttribute('auto-rotate')?'STOP ROTATION':'AUTO ROTATE'};
+$('play').onclick=()=>{if(!clip)return;if(viewer.paused){viewer.play();$('play').textContent='PAUSE ANIMATION'}else{viewer.pause();$('play').textContent='PLAY ANIMATION'}};
+$('slider').oninput=()=>{if(!clip)return;viewer.pause();$('play').textContent='PLAY ANIMATION';viewer.currentTime=viewer.duration*Number($('slider').value)/100;$('percent').textContent=$('slider').value+'%'};
+viewer.addEventListener('timeupdate',()=>{if(clip&&!viewer.paused&&viewer.duration>0){const p=Math.round(viewer.currentTime/viewer.duration*100);$('slider').value=p;$('percent').textContent=p+'%'}});
+$('reset').onclick=()=>{if(!ready)return;viewer.pause();viewer.removeAttribute('auto-rotate');$('rotate').textContent='AUTO ROTATE';$('play').textContent='PLAY ANIMATION';if(clip)viewer.currentTime=0;$('slider').value=0;$('percent').textContent='0%';applyView()};
+// Camera distance is relative to the model's ideal framing.
+const distances=[150,165,165,190];
+function applyView(){
+    viewer.cameraTarget='auto auto auto';
+    viewer.fieldOfView='auto';
+    viewer.cameraOrbit=`0deg 75deg ${distances[selected]||165}%`;
+    viewer.resetTurntableRotation();
+    viewer.jumpCameraToGoal();
+}
+const dialog=$('licenseDialog'),accept=$('licenseAccept'),confirm=$('confirmDownload'),downloadStatus=$('downloadStatus');
+let downloadURL='',downloadName='',busy=false;
+$('freeDownload').onclick=()=>{
+    if(!viewer.loaded)return;
+    downloadURL=new URL(path+projects[selected].file,document.baseURI).href;
+    downloadName=projects[selected].file.replace(/\.glb$/i,'.obj');
+    $('downloadFile').textContent=downloadName;
+    accept.checked=false;confirm.disabled=true;downloadStatus.textContent='';dialog.showModal();
+};
+accept.onchange=()=>{confirm.disabled=!accept.checked||busy};
+$('licenseClose').onclick=()=>{if(!busy)dialog.close()};
+dialog.addEventListener('cancel',e=>{if(busy)e.preventDefault()});
+confirm.onclick=async()=>{
+    if(busy||!accept.checked)return;
+    busy=true;accept.disabled=true;confirm.disabled=true;
+    downloadStatus.textContent='CONVERTING MODEL TO OBJ...';
+    try{
+        const [{GLTFLoader},{OBJExporter}]=await Promise.all([
+            import('https://esm.sh/three@0.170.0/examples/jsm/loaders/GLTFLoader.js'),
+            import('https://esm.sh/three@0.170.0/examples/jsm/exporters/OBJExporter.js')
+        ]);
+        const gltf=await new GLTFLoader().loadAsync(downloadURL);
+        const scene=gltf.scene;
+        scene.scale.multiplyScalar(1000);
+        scene.rotation.x+=Math.PI/2;
+        scene.updateMatrixWorld(true);
+        // Preserve each mesh as a uniquely named OBJ object.
+        const usedNames = new Set();
+        let meshIndex = 0;
+        scene.traverse(object => {
+            if (!object.isMesh) return;
+            meshIndex++;
+            const base = (object.name || object.parent?.name || `Part_${meshIndex}`).trim().replace(/[^\w.-]+/g, '_') || `Part_${meshIndex}`;
+            let name = base, suffix = 2;
+            while (usedNames.has(name)) name = `${base}_${suffix++}`;
+            usedNames.add(name);
+            object.name = name;
+        });
+        const result=new OBJExporter().parse(scene);
+        const url=URL.createObjectURL(new Blob([result],{type:'text/plain;charset=utf-8'}));
+        const a=document.createElement('a');a.href=url;a.download=downloadName;document.body.append(a);a.click();a.remove();
+        setTimeout(()=>URL.revokeObjectURL(url),60000);
+        downloadStatus.textContent='OBJ GENERATED.';dialog.close();
+    }catch(error){console.error(error);downloadStatus.textContent='CONVERSION FAILED: '+(error.message||'Please try again.');}
+    finally{busy=false;accept.disabled=false;confirm.disabled=!accept.checked;}
+};
+window.addEventListener('resize',layout);layout();const timer=setTimeout(()=>{if(!ready)$('status').textContent='3D VIEWER COULD NOT START — check internet connection or browser.'},12000);customElements.whenDefined('model-viewer').then(()=>{clearTimeout(timer);ready=true;choose(0)});
+</script>
+</body>
+</html>
