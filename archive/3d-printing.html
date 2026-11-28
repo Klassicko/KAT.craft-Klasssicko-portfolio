@@ -10,6 +10,35 @@
 :root{--bg:#0B1D35;--panel:#142D4C;--accent:#91B6DA;--text:#E4F1FF;--border:#91B6DA40}
 *{box-sizing:border-box}body{margin:0;background-color:var(--bg);background-image:linear-gradient(#91B6DA20 1px,transparent 1px),linear-gradient(90deg,#91B6DA20 1px,transparent 1px),linear-gradient(#91B6DA09 1px,transparent 1px),linear-gradient(90deg,#91B6DA09 1px,transparent 1px);background-size:100px 100px,100px 100px,20px 20px,20px 20px;color:var(--text);font-family:'Space Grotesk',sans-serif}a{color:inherit;text-decoration:none}header,footer{padding:20px 6%;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--bg)}.logo,h1,h2{font-family:Anton,sans-serif;font-weight:400}.logo{font-size:26px}.label,button{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent)}.heading{padding:30px 6% 0}h1{font-size:clamp(42px,7vw,90px);margin:8px 0}main{display:grid;grid-template-columns:34% 66%;align-items:center}.selector{height:540px;position:relative;overflow:hidden;touch-action:none;user-select:none;cursor:grab}.ring{position:absolute;border:1px solid var(--border);border-radius:50%;pointer-events:none}.ring:after{content:'';position:absolute;inset:12px;border:1px dashed var(--border);border-radius:50%}.item{position:absolute;border:1px solid var(--border);border-radius:50%;background:var(--panel);width:120px;height:120px;padding:0;overflow:hidden;transition:transform .22s,left .22s,top .22s,opacity .22s}.item.active{border:2px solid var(--accent);box-shadow:0 0 24px #91B6DA44;z-index:3}.item model-viewer{width:100%;height:100%;pointer-events:none}.item span{position:absolute;bottom:8px;left:0;right:0;text-align:center;pointer-events:none;font-size:9px}.dragging .item{transition:none}.wheelcontrols{position:absolute;bottom:12px;left:12px;display:flex;align-items:center;gap:8px;z-index:5}.panel{min-width:0;border-left:1px solid var(--border);padding:20px 6%}#viewer{width:100%;height:clamp(280px,48vh,550px);--poster-color:transparent}h2{font-size:clamp(28px,4vw,52px);margin:10px 0}.controls{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}button{border:1px solid var(--border);background:var(--bg);padding:10px;cursor:pointer}button:hover,button:focus-visible{border-color:var(--accent);color:var(--text)}input{width:100%;accent-color:var(--accent)}[hidden]{display:none!important}#status{min-height:18px;overflow-wrap:anywhere}footer{margin-top:30px;border-top:1px solid var(--border)}@media(max-width:700px){main{grid-template-columns:38% 62%}.selector{height:380px}.item{width:64px;height:64px}.panel{padding:12px}.wheelcontrols{flex-wrap:wrap;gap:4px}.label,button{font-size:9px}#viewer{height:280px}}
 </style>
+
+<script>
+document.querySelectorAll('model-viewer').forEach(viewer => {
+
+    viewer.setAttribute('exposure', '0.8');
+
+    function fixMaterials() {
+        if (!viewer.model) return;
+
+        viewer.model.materials.forEach(material => {
+            material.setAlphaMode('OPAQUE');
+            material.setDoubleSided(true);
+
+            material.pbrMetallicRoughness
+                .setMetallicFactor(0);
+
+            material.pbrMetallicRoughness
+                .setRoughnessFactor(0.65);
+        });
+    }
+
+    viewer.addEventListener('load', fixMaterials);
+
+    if (viewer.loaded) {
+        fixMaterials();
+    }
+
+});
+</script>
 </head>
 <body>
 <header><a class="logo" href="../index.html">KAT.CRAFT</a><a class="label" href="../index.html#archive">← BACK TO ARCHIVE</a></header>
